@@ -9,6 +9,7 @@ def ec2_desc(ec2):
     # print('PrivateIpAddress=' + insts['PrivateIpAddress'], 
     #        '\n' 'PublicIpAddress= ' + insts['PublicIpAddress'])  #.get('PrivateIpAddress')
 
+    # add extra comments for pull request test
     # when ec2 instance in stop state, the 'PublicIpAddress' is not retrievable
     print('PrivateIpAddress=' + insts['PrivateIpAddress']) 
 
