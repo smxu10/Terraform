@@ -9,6 +9,9 @@ resource "aws_ssm_association" "ssm-github" {
     key    = "tag:Name"
     values = [var.instance_tag["Name"] ]
   }
+  
+  max_concurrency = "20%"
+  max_errors = "20%"
 
   parameters = {
         SourceType = "GitHub",

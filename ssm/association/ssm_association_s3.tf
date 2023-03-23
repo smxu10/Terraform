@@ -10,6 +10,9 @@ resource "aws_ssm_association" "ssm-s3" {
     values = [var.instance_tag["Name"] ]
   }
 
+  max_concurrency = "20%"
+  max_errors = "20%"
+  
   parameters = {
         SourceType = "S3"
 
