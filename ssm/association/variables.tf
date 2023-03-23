@@ -54,17 +54,17 @@ variable "github_playbook" {
 
 variable "github_owner" {
   type        = string
-  default     = "smxu10"     
+  default     = "/github/owner"     
 }
 
 variable "github_repo" {
   type        = string
-  default     = "ansible"     
+  default     = "/github/repo"     
 }
 
 variable "github_path" {
   type        = string
-  default     = "./"     
+  default     = "/github/path"      
 }
 
 
