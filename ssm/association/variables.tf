@@ -18,6 +18,18 @@ variable "bucket" {
   default     = "ansible-pb"
 }
 
+variable "instance_tag" {
+  type        = map
+  default = {
+    "Name" = "cribl-"
+  }
+}
+
+variable "schedule" {
+  type        = string
+  default     = "cron(0 0 0/4 * * ? *)"
+}
+
 variable "bucket_prefix_1" {
   description = "S3 bucket prefix or consider as folder path"
   type        = string
@@ -40,14 +52,19 @@ variable "github_playbook" {
   default     = "install-httpd.yml"     
 }
 
-variable "instance_tag" {
-  type        = map
-  default = {
-    "Name" = "cribl-"
-  }
+variable "github_owner" {
+  type        = string
+  default     = "smxu10"     
 }
 
-variable "schedule" {
+variable "github_repo" {
   type        = string
-  default     = "cron(0 0 0/4 * * ? *)"
+  default     = "ansible"     
 }
+
+variable "github_path" {
+  type        = string
+  default     = "./"     
+}
+
+
