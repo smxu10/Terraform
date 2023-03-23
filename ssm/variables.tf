@@ -1,6 +1,11 @@
-variable "ssm_association_name" {
+variable "ssm_association_s3_name" {
   type        = string
   default     = "s3-ansible-tf"
+}
+
+variable "ssm_association_github_name" {
+  type        = string
+  default     = "github-ansible-tf"
 }
 
 variable "aws_managed_ssm_document" {
@@ -25,9 +30,14 @@ variable "bucket_prefix_2" {
   default     = "createdir"
 }
 
-variable "playbook" {
+variable "s3_playbook" {
   type        = string
-  default     = "playbook.yml"     # ARM ami:    "ami-0f69dd1d0d03ad669"
+  default     = "playbook.yml"     
+}
+
+variable "github_playbook" {
+  type        = string
+  default     = "install-httpd.yml"     
 }
 
 variable "instance_tag" {
