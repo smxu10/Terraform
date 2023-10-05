@@ -16,7 +16,7 @@ resource "aws_ssm_association" "ssm-github" {
   parameters = {
         SourceType = "GitHub",
         # SourceInfo = "{ \"owner\":\"${var.github_owner}\",\"repository\":\"${var.github_repo}\",\"path\":\"${var.github_path}\",\"getOptions\":\"branch:master\" }"
-        SourceInfo = "{ \"owner\":\"${data.aws_ssm_parameter.github-owner.value}\",\"repository\":\"${data.aws_ssm_parameter.github-repo.value}\",\"path\":\"${data.aws_ssm_parameter.github-path.value}\",\"getOptions\":\"branch:master\" }"
+        SourceInfo = "{ \"owner\":\"${data.aws_ssm_parameter.github-owner.value}\",\"repository\":\"${data.aws_ssm_parameter.github-repo.value}\",\"path\":\"${data.aws_ssm_parameter.github-path.value}\", \"getOptions\":\"branch:master\" }"
         InstallDependencies = "True"
         PlaybookFile = var.github_playbook 
         ExtraVariables = "SSM=True"

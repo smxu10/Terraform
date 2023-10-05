@@ -1,0 +1,16 @@
+---
+schemaVersion: '2.2'
+description: Uninstall Jenkins
+mainSteps:
+- action: aws:runShellScript
+  name: UninstallJenkins
+  inputs:
+    runCommand:
+    - sudo systemctl stop jenkins
+    - sudo systemctl status jenkins
+    - sudo yum remove -y jenkins
+    - |
+       sudo rm -rf /var/lib/jenkins \
+              /var/cache/yum/x86_64/2/jenkins \
+              /var/lib/yum/repos/x86_64/2/jenkins \
+              /etc/systemd/system/jenkins.service.d

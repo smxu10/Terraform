@@ -1,0 +1,107 @@
+---
+schemaVersion: '2.2'
+description: Install Jenkins
+mainSteps:
+- action: aws:runShellScript
+  name: InstallJenkins
+  inputs:
+    runCommand:
+    - sudo yum update
+    - sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    - sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key # https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+    - sudo amazon-linux-extras install java-openjdk11 -y
+    - sudo yum install jq -y
+    - sudo yum install jenkins -y
+    - |
+      sudo wget https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/2.12.13/jenkins-plugin-manager-2.12.13.jar \
+           -O /var/lib/jenkins/jenkins-plugin-manager.jar
+    - |
+      sudo java -jar /var/lib/jenkins/jenkins-plugin-manager.jar \
+                --war /usr/share/java/jenkins.war \
+                --plugin-download-directory /var/lib/jenkins/plugins \
+                --plugins authorize-project \
+                          aws-credentials \
+                          blueocean \
+                          config-file-provider \
+                          configuration-as-code \
+                          docker-commons \
+                          docker-workflow \
+                          git \
+                          git-forensics \
+                          git-parameter \
+                          github \
+                          github-autostatus \
+                          github-branch-source \
+                          github-checks \
+                          hashicorp-vault-plugin \
+                          ldap \
+                          mask-passwords \
+                          matrix-auth \
+                          metrics \
+                          pipeline-github \
+                          role-strategy \
+                          skip-notifications-trait \
+                          slack \
+                          splunk-devops \
+                          ssh-slaves \
+                          timestamper \
+                          warnings-ng \
+                          ws-cleanup
+    - privatekey=$(aws ssm get-parameter --region us-east-1 --name keypair_ed22519_pri --query Parameter.Value  --with-decryption | jq . -r)                    
+    - adminuser=$(aws ssm get-parameter --region us-east-1 --name /github/ansible/jenkins/adminuser --query Parameter.Value | jq . -r)                    
+    - adminpasswd=$(aws ssm get-parameter --region us-east-1 --name /github/ansible/jenkins/adminpasswd --query Parameter.Value  --with-decryption | jq . -r)                    
+    - greenip=$(aws ssm get-parameter --region us-east-1 --name /github/ansible/jenkins/nodes/node1-ip --query Parameter.Value | jq . -r)                    
+    - |
+      sudo cat <<- EOF > /var/lib/jenkins/jenkins.yml
+      credentials:
+        system:
+          domainCredentials:
+          - credentials:
+            - basicSSHUserPrivateKey:
+                id: "jenkins"
+                privateKeySource:
+                  directEntry:
+                    privateKey: |
+                      ${privatekey}
+                scope: GLOBAL
+                username: "jenkins"
+      jenkins:
+        authorizationStrategy:
+          globalMatrix:
+            permissions:
+              - "USER:Overall/Administer:${adminuser}"
+        securityRealm:
+          local:
+            users:
+              - id: ${adminuser}
+                password: ${adminpasswd}
+        labelAtoms:
+        - name: "built-in"
+        - name: "green"
+        - name: "linux"
+        numExecutors: 0
+        nodes:
+        - permanent:
+            labelString: "linux"
+            launcher:
+              ssh:
+                credentialsId: "jenkins"
+                host: ${greenip}
+                port: 22
+                sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
+            name: "green"
+            numExecutors: 1
+            remoteFS: "/opt/jenkins"
+            retentionStrategy: "always"
+      EOF
+    - sudo chown -R jenkins:jenkins /var/lib/jenkins
+    - sudo mkdir -p /etc/systemd/system/jenkins.service.d
+    - |
+      sudo cat <<- EOF > /etc/systemd/system/jenkins.service.d/casc.conf
+      [Service]
+      Environment=CASC_JENKINS_CONFIG=/var/lib/jenkins/jenkins.yml
+      EOF
+    - sudo systemctl daemon-reload
+    - sudo systemctl enable jenkins
+    - sudo systemctl start jenkins
+    - sudo systemctl status jenkins

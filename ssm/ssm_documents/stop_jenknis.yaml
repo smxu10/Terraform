@@ -1,0 +1,10 @@
+---
+schemaVersion: '2.2'
+description: Stop Jenkins
+mainSteps:
+- action: aws:runShellScript
+  name: StopJenkins
+  inputs:
+    runCommand:
+    - sudo systemctl stop jenkins
+    - sudo systemctl status jenkins

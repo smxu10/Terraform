@@ -1,0 +1,18 @@
+---
+schemaVersion: '2.2'
+description: Configure Jenkins agent on agent node
+mainSteps:
+- action: aws:runShellScript
+  name: ConfigJenkinsAgnet
+  inputs:
+    runCommand:
+    - sudo yum update –y
+    - sudo amazon-linux-extras install java-openjdk11 -y
+    - sudo yum install jq -y
+    - if ! getent passwd jenkins > /dev/null 2>&1; then sudo adduser jenkins --shell /bin/bash; fi
+    - if [ ! -d /opt/jenkins/.ssh ]; then sudo mkdir -p /opt/jenkins/.ssh; fi
+    - aws ssm get-parameter --region us-east-1 --name /jenkins/jenkins_ed22519_pub --query Parameter.Value  --with-decryption | jq . -r >> /opt/jenkins/.ssh/authorized_keys
+    - chown -R jenkins:jenkins /opt/jenkins
+    - chmod 700 /opt/jenkins/.ssh/
+    - if [ ! -d /home/jenkins/.ssh ]; then ln -s /opt/jenkins/.ssh /home/jenkins/.ssh && chown -R jenkins:jenkins /home/jenkins && chmod 700 /opt/jenkins/.ssh/; fi
+    

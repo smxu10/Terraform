@@ -1,4 +1,4 @@
-ssm/association/.terraform/*
-ssm/association/.terraform.lock.hcl
-ssm/association/terraform.tfstate
-ssm/association/terraform.tfstate.backup
+ssm/**/.terraform/*
+ssm/**/.terraform.lock.hcl
+ssm/**/terraform.tfstate
+ssm/**/terraform.tfstate.backup

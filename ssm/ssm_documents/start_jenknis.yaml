@@ -1,0 +1,10 @@
+---
+schemaVersion: '2.2'
+description: Start Jenkins
+mainSteps:
+- action: aws:runShellScript
+  name: StartJenkins
+  inputs:
+    runCommand:
+    - sudo systemctl start jenkins
+    - sudo systemctl status jenkins
